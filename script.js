@@ -15,59 +15,93 @@ const connection = mysql.createConnection({
 
 connection.connect((err) => {
     if (err) throw err;
-    console.log("You Connected!"); 
-    startEmployeeTracker(); 
+    console.log("You Connected!"); // turn into welcome message 
+    startEmployeeTracker();
 });
 
 const startEmployeeTracker = () => {
     inquirer.prompt({
         name: 'initChoice',
-        type: 'list', 
+        type: 'list',
         message: 'What would you like to do?',
         choices: [
             'Add a department, role, or an employee',
-            'View departments, roles, or employees', 
+            'View complete lists of departments, roles, or employees',
             'Update a current employee roles',
             'Quit Employee Tracker Application'
         ]
     }).then((answer) => {
-        if (answer.initChoice === 'Add a department, role, or an employee'){
+        if (answer.initChoice === 'Add a department, role, or an employee') {
             console.log('Add a department, role, or an employee');
-            add(); 
-        } 
-        if (answer.initChoice === 'View departments, roles, or employees'){
-            console.log('View departments, roles, or employees'); 
-            view(); 
+            add();
         }
-        if (answer.initChoice === 'Update a current employee roles'){
-            console.log('Update a current employee roles'); 
+        if (answer.initChoice === 'View complete lists of departments, roles, or employees') {
+            console.log('View departments, roles, or employees');
+            viewComplete();
+        }
+        if (answer.initChoice === 'Update a current employee roles') {
+            console.log('Update a current employee roles');
             update()
         }
-        if (answer.initChoice === 'Quit Employee Tracker Application'){
-            console.log('Thank you for using Employee Tracker'); 
+        if (answer.initChoice === 'Quit Employee Tracker Application') {
+            console.log('Thank you for using Employee Tracker');
             connection.end();
         }
-   }); 
+    });
 };
 
 const add = () => {
-    console.log("function add is being read"); 
-    startEmployeeTracker(); 
+    console.log("function add is being read");
+    startEmployeeTracker();
     // Add departments, roles, employees
     // inquirer.prompt > input 
-}; 
+};
 
-const view = () => {
-    console.log("function view is being read"); 
-    startEmployeeTracker(); 
-    // View departments, roles, employees
-    // inquirer.prompt > choices
+// working
+const viewComplete = () => {
+    inquirer.prompt({
+        name: 'view',
+        type: 'list',
+        message: 'What would you like to view?',
+        choices: [
+            'Departments',
+            'Roles',
+            'Employees',
+        ]
+    }).then((answer) => {
+        if (answer.view === 'Departments') {
+            connection.query(
+                'SELECT * FROM department', (err, res) => {
+                    if (err) throw err;
+                    console.table(res);
+                }
+            );
+        }
+        if (answer.view === 'Roles') {
+            connection.query(
+                'SELECT * FROM role', (err, res) => {
+                    if (err) throw err;
+                    console.table(res);
+                }
+            );
+        }
+        if (answer.view === 'Employees') {
+            connection.query(
+                'SELECT * FROM employee', (err, res) => {
+                    if (err) throw err;
+                    console.table(res);
+                }
+            );
+        }
+        startEmployeeTracker();
+    });
 
-}; 
+};
+
 
 const update = () => {
-    console.log("function update is being read"); 
-    startEmployeeTracker(); 
+    console.log("function update is being read");
+    startEmployeeTracker();
     // Update employee roles
     // inquirer.prompt > choices > then input 
 }
