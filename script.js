@@ -27,36 +27,50 @@ const startEmployeeTracker = () => {
         choices: [
             'Add a department, role, or an employee',
             'View departments, roles, or employees', 
-            'Update a current employee roles'
+            'Update a current employee roles',
+            'Quit Employee Tracker Application'
         ]
     }).then((answer) => {
         if (answer.initChoice === 'Add a department, role, or an employee'){
             console.log('Add a department, role, or an employee');
-            connection.end(); 
+            add(); 
         } 
         if (answer.initChoice === 'View departments, roles, or employees'){
             console.log('View departments, roles, or employees'); 
-            connection.end();
+            view(); 
         }
         if (answer.initChoice === 'Update a current employee roles'){
             console.log('Update a current employee roles'); 
+            update()
+        }
+        if (answer.initChoice === 'Quit Employee Tracker Application'){
+            console.log('Thank you for using Employee Tracker'); 
             connection.end();
         }
    }); 
 };
-// three tables common collumn = id 
 
-// table one: department 
-// table two: role
-// table three: employee 
-
-// need to be able to:
-// Add departments, roles, employees
+const add = () => {
+    console.log("function add is being read"); 
+    startEmployeeTracker(); 
+    // Add departments, roles, employees
     // inquirer.prompt > input 
-// View departments, roles, employees
+}; 
+
+const view = () => {
+    console.log("function view is being read"); 
+    startEmployeeTracker(); 
+    // View departments, roles, employees
     // inquirer.prompt > choices
-// Update employee roles
+
+}; 
+
+const update = () => {
+    console.log("function update is being read"); 
+    startEmployeeTracker(); 
+    // Update employee roles
     // inquirer.prompt > choices > then input 
+}
 
 
 // bonus come back 
