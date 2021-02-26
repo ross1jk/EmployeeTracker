@@ -1,7 +1,21 @@
 const mysql = require('mysql');
-const inquirer = require('inquirer'); 
+const inquirer = require('inquirer');
 const cTable = require('console.table');
 // https://www.npmjs.com/package/console.table 
+
+const connection = mysql.createConnection({
+    host: 'localhost',
+    port: 3306,
+    user: 'root',
+    // look into changing password 
+    password: '',
+    database: 'employee_trackerDB',
+});
+
+connection.connect((err) => {
+    if (err) throw err;
+    console.log("You Connected!"); 
+});
 
 // three tables common collumn = id 
 
