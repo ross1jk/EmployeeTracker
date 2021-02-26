@@ -1,6 +1,7 @@
 const mysql = require('mysql');
 const inquirer = require('inquirer');
 const cTable = require('console.table');
+const { start } = require('repl');
 // https://www.npmjs.com/package/console.table 
 
 const connection = mysql.createConnection({
@@ -15,8 +16,34 @@ const connection = mysql.createConnection({
 connection.connect((err) => {
     if (err) throw err;
     console.log("You Connected!"); 
+    startEmployeeTracker(); 
 });
 
+const startEmployeeTracker = () => {
+    inquirer.prompt({
+        name: 'initChoice',
+        type: 'list', 
+        message: 'What would you like to do?',
+        choices: [
+            'Add a department, role, or an employee',
+            'View departments, roles, or employees', 
+            'Update a current employee roles'
+        ]
+    }).then((answer) => {
+        if (answer.initChoice === 'Add a department, role, or an employee'){
+            console.log('Add a department, role, or an employee');
+            connection.end(); 
+        } 
+        if (answer.initChoice === 'View departments, roles, or employees'){
+            console.log('View departments, roles, or employees'); 
+            connection.end();
+        }
+        if (answer.initChoice === 'Update a current employee roles'){
+            console.log('Update a current employee roles'); 
+            connection.end();
+        }
+   }); 
+};
 // three tables common collumn = id 
 
 // table one: department 
