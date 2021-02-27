@@ -51,6 +51,7 @@ const startEmployeeTracker = () => {
     });
 };
 
+//working
 const add = () => {
     inquirer.prompt({
         name: 'add',
@@ -81,7 +82,7 @@ const add = () => {
             });
         }
         if (answer.add === 'Role') {
-            inquirer.prompt(
+            inquirer.prompt([
                 {
                     name: 'title',
                     type: 'input',
@@ -97,7 +98,7 @@ const add = () => {
                     type: 'input',
                     message: 'What is the department ID for this role?'
                 }
-            ).then((answer) => {
+            ]).then((answer) => {
                 connection.query('INSERT INTO role SET ?',
                     {
                         title: answer.title,
@@ -109,6 +110,7 @@ const add = () => {
                         console.log(`${answer.title} added to roles`);
                     }
                 );
+                startEmployeeTracker(); 
             });
         }
         if (answer.add == 'Employee') {
@@ -117,7 +119,7 @@ const add = () => {
                     name: 'first',
                     type: 'input',
                     message: 'What is the employees frist name?'
-                }, 
+                },
                 {
                     name: 'last',
                     type: 'input',
@@ -135,26 +137,22 @@ const add = () => {
                 }
             ]).then((answer) => {
                 connection.query('INSERT INTO employee SET ?',
-                {
-                    first_name: answer.first,
-                    last_name: answer.last,
-                    role_id: answer.role,
-                    manager_id: answer.manager
-                },
-                (err) => {
-                    if (err) throw err;
-                    console.log(`${answer.first} ${answer.last} added to employees`);
-                }
+                    {
+                        first_name: answer.first,
+                        last_name: answer.last,
+                        role_id: answer.role,
+                        manager_id: answer.manager
+                    },
+                    (err) => {
+                        if (err) throw err;
+                        console.log(`${answer.first} ${answer.last} added to employees`);
+                    }
                 );
-                startEmployeeTracker(); 
-           }); 
+                startEmployeeTracker();
+            });
         }
     });
 };
-
-
-
-
 
 // working
 const viewComplete = () => {
@@ -195,7 +193,7 @@ const viewComplete = () => {
         }
         if (answer.view === 'All') {
             connection.query(
-            `SELECT * FROM employee_trackerDB.role
+                `SELECT * FROM employee_trackerDB.role
             INNER JOIN employee_trackerDB.employee
             ON role.id = employee.role_id
             INNER JOIN employee_trackerDB.department
