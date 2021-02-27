@@ -2,6 +2,7 @@ const mysql = require('mysql');
 const inquirer = require('inquirer');
 const cTable = require('console.table');
 const { start } = require('repl');
+const { resourceLimits } = require('worker_threads');
 // https://www.npmjs.com/package/console.table 
 
 const connection = mysql.createConnection({
@@ -51,11 +52,40 @@ const startEmployeeTracker = () => {
 };
 
 const add = () => {
-    console.log("function add is being read");
-    startEmployeeTracker();
-    // Add departments, roles, employees
-    // inquirer.prompt > input 
+    inquirer.prompt({
+        name: 'add',
+        type: 'list',
+        message: 'Would you like to add a department, role, or employee?',
+        choices: [
+            'Department',
+            'Role',
+            'Employee'
+        ]
+    }).then((answer) => {
+        if (answer.add === 'Department') {
+            inquirer.prompt({
+                name: 'departAdd',
+                type: 'input',
+                message: 'What is the department name you would like to add?'
+            }).then((answer) => {
+                connection.query('INSERT INTO department SET ?',
+                    {
+                        name: answer.departAdd
+                    },
+                    (err) => {
+                        if (err) throw err;
+                        console.log(`${answer.departAdd} added to departments`);
+                        startEmployeeTracker();
+                    }
+                );
+            });
+        }
+    });
 };
+
+
+
+
 
 // working
 const viewComplete = () => {
@@ -100,12 +130,44 @@ const viewComplete = () => {
 
 
 const update = () => {
-    console.log("function update is being read");
-    startEmployeeTracker();
-    // Update employee roles
-    // inquirer.prompt > choices > then input 
-}
+    // connection.query('SELECT * FROM employee', (err, res) => {
+    //     if (err) throw err;
+    //     inquirer.prompt([
+    //         {
+    //             name: 'employee',
+    //             type: 'list',
+    //             choices() {
+    //                 const employeeArray = [];
+    //                 res.forEach(({ employee }) => {
+    //                     employeeArray.push(employee);
+    //                 });
+    //                 return choiceArray;
+    //             },
+    //             message: 'Which employee would you like to update?'
+    //         },
+    //         {
+    //             name: 'role',
+    //             input: 'input',
+    //             message: 'What is their role?'
+    //         }
+    //     ]).then((answer) => {
+    //         connection.query('UPDATE products SET ? WHERE ?',
+    //             [
+    //                 {
+    //                     role_id: answer.role
+    //                 },
+    //                 {
+    //                     first_name: employee
+    //                 }
+    //             ],
+    //             (err, res) => {
+    //                 if (err) throw err;
+    //                 console.log(`${res.affectedRows} products updated!\n`);
+    //                 startEmployeeTracker()
 
+    //             });
+    //     });
+    }
 
 // bonus come back 
     // Update employee managers
