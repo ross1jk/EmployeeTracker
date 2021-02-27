@@ -80,6 +80,37 @@ const add = () => {
                 );
             });
         }
+        if (answer.add === 'Role') {
+            inquirer.prompt(
+                {
+                    name: 'title',
+                    type: 'input',
+                    message: 'What is the Role title?'
+                },
+                {
+                    name: 'salary',
+                    type: 'input',
+                    message: 'What is the salary?'
+                },
+                {
+                    name: 'department',
+                    type: 'input',
+                    message: 'What is the department ID for this role?'
+                }
+            ).then((answer) => {
+                connection.query('INSERT INTO role SET ?',
+                    {
+                        title: answer.title,
+                        salary: answer.salary,
+                        department_id: answer.department
+                    },
+                    (err) => {
+                        if (err) throw err;
+                        console.log(`${answer.title} added to roles`);
+                    }
+                );
+            });
+        }
     });
 };
 
@@ -97,6 +128,7 @@ const viewComplete = () => {
             'Departments',
             'Roles',
             'Employees',
+            'All',
         ]
     }).then((answer) => {
         if (answer.view === 'Departments') {
@@ -123,6 +155,17 @@ const viewComplete = () => {
                 }
             );
         }
+        if (answer.view === 'All') {
+            connection.query(
+            `SELECT * FROM employee_trackerDB.role
+            INNER JOIN employee_trackerDB.employee
+            ON role.id = employee.role_id
+            INNER JOIN employee_trackerDB.department
+            ON role.department_id = department.id;`, (err, res) => {
+                if (err) throw err;
+                console.table(res);
+            });
+        }
         startEmployeeTracker();
     });
 
@@ -130,44 +173,8 @@ const viewComplete = () => {
 
 
 const update = () => {
-    // connection.query('SELECT * FROM employee', (err, res) => {
-    //     if (err) throw err;
-    //     inquirer.prompt([
-    //         {
-    //             name: 'employee',
-    //             type: 'list',
-    //             choices() {
-    //                 const employeeArray = [];
-    //                 res.forEach(({ employee }) => {
-    //                     employeeArray.push(employee);
-    //                 });
-    //                 return choiceArray;
-    //             },
-    //             message: 'Which employee would you like to update?'
-    //         },
-    //         {
-    //             name: 'role',
-    //             input: 'input',
-    //             message: 'What is their role?'
-    //         }
-    //     ]).then((answer) => {
-    //         connection.query('UPDATE products SET ? WHERE ?',
-    //             [
-    //                 {
-    //                     role_id: answer.role
-    //                 },
-    //                 {
-    //                     first_name: employee
-    //                 }
-    //             ],
-    //             (err, res) => {
-    //                 if (err) throw err;
-    //                 console.log(`${res.affectedRows} products updated!\n`);
-    //                 startEmployeeTracker()
-
-    //             });
-    //     });
-    }
+    console.log("fill")
+}
 
 // bonus come back 
     // Update employee managers
