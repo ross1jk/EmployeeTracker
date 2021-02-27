@@ -111,6 +111,44 @@ const add = () => {
                 );
             });
         }
+        if (answer.add == 'Employee') {
+            inquirer.prompt([
+                {
+                    name: 'first',
+                    type: 'input',
+                    message: 'What is the employees frist name?'
+                }, 
+                {
+                    name: 'last',
+                    type: 'input',
+                    message: 'What is the employees last name?'
+                },
+                {
+                    name: 'role',
+                    type: 'input',
+                    message: 'What is the employees role id'
+                },
+                {
+                    name: 'manager',
+                    type: 'input',
+                    message: 'What is the employees Managers ID?'
+                }
+            ]).then((answer) => {
+                connection.query('INSERT INTO employee SET ?',
+                {
+                    first_name: answer.first,
+                    last_name: answer.last,
+                    role_id: answer.role,
+                    manager_id: answer.manager
+                },
+                (err) => {
+                    if (err) throw err;
+                    console.log(`${answer.first} ${answer.last} added to employees`);
+                }
+                );
+                startEmployeeTracker(); 
+           }); 
+        }
     });
 };
 
