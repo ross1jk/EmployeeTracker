@@ -3,6 +3,7 @@ const inquirer = require('inquirer');
 const cTable = require('console.table');
 const { start } = require('repl');
 const { resourceLimits } = require('worker_threads');
+const { listenerCount } = require('events');
 // https://www.npmjs.com/package/console.table 
 
 const connection = mysql.createConnection({
@@ -110,7 +111,7 @@ const add = () => {
                         console.log(`${answer.title} added to roles`);
                     }
                 );
-                startEmployeeTracker(); 
+                startEmployeeTracker();
             });
         }
         if (answer.add == 'Employee') {
@@ -193,11 +194,13 @@ const viewComplete = () => {
         }
         if (answer.view === 'All') {
             connection.query(
-                `SELECT * FROM employee_trackerDB.role
-            INNER JOIN employee_trackerDB.employee
-            ON role.id = employee.role_id
-            INNER JOIN employee_trackerDB.department
-            ON role.department_id = department.id;`, (err, res) => {
+                `
+                SELECT first_name, last_name, salary, title, name, manager_id FROM employee_trackerDB.employee
+                INNER JOIN employee_trackerDB.role
+                ON employee.role_id = role.id
+                INNER JOIN employee_trackerDB.department
+                ON role.department_id = department.id;
+                `, (err, res) => {
                 if (err) throw err;
                 console.table(res);
             });
@@ -209,9 +212,57 @@ const viewComplete = () => {
 
 
 const update = () => {
-    console.log("fill")
+    connection.query('SELECT * FROM employee', (err, res) => {
+        inquirer.prompt([
+            {
+                name: 'employee',
+                type: 'list',
+                choices() {
+                    const employeeArray = [];
+                    res.map(({ id, first_name, last_name }) => {
+                        let employeeSelect = {
+                            name: first_name + " " + last_name,
+                            value: id
+                        }
+                        employeeArray.push(employeeSelect);
+                    });
+                    return employeeArray;
+                },
+                message: 'Which Employee would you like to update?',
+            },
+            {
+                name: 'role',
+                type: 'list',
+                choices() {
+                    const roleArray = []; 
+                    connection.query('SELECT * FROM role', (err, res) => {
+                        res.map(({ id, title }) => {
+                            let roleSelect = {
+                                name: title,
+                                value: id
+                            }
+                            roleArray.push(roleSelect); 
+                        });
+                    });
+                    return roleArray; 
+                }, 
+                message: 'What is their updated role?',
+            }
+        ]).then((answer) => {
+            connection.query('UPDATE employee SET ? WHERE ?',
+                [
+                    {
+                        role_id: answer.role
+                    },
+                    {
+                        id: answer.employee.value
+                    }
+                ]);
+            startEmployeeTracker();
+        });
+    });
 }
-
+// UPDATE employee_trackerDB.employee SET role_id = 5 WHERE id = 4;
 // bonus come back 
     // Update employee managers
 
@@ -220,3 +271,11 @@ const update = () => {
     // Delete departments, roles, and employees
 
     // View the total utilized budget of a department -- combined salaries of all employees in that department
+
+    // choices() {
+    //     const employeeArray = [];
+    //     res.forEach(({ first_name }) => {
+    //         employeeArray.push(first_name);
+    //     });
+    //     return employeeArray;
+    // },
