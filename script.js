@@ -54,6 +54,7 @@ const startEmployeeTracker = () => {
             `Update an Employee's Manager`,
             'Delete a department, role, or an employee',
             `View each department's total utilized budget`,
+            `View departments by Manager`,
             'Quit Employee Tracker Application'
         ]
     }).then((answer) => {
@@ -75,6 +76,9 @@ const startEmployeeTracker = () => {
                 break;
             case `View each department's total utilized budget`:
                 utilizedBudget();
+                break;
+            case `View departments by Manager`: 
+                managerView(); 
                 break;
             case 'Quit Employee Tracker Application':
                 console.log(`
@@ -395,6 +399,23 @@ const utilizedBudget = () => {
     }); 
     startEmployeeTracker(); 
 }
-// bonus come back 
 
-    // View employees by manager
+const managerView = () => {
+    // inquirer.prompt([
+    //     {
+    //         name: 'managerview',
+    //         type: 'list', 
+    //         message: `Which manager's department would you like to view?`,
+    //         choices: 
+    //     }
+    // ]).then((answer) => {
+      connection.query(`SELECT id, first_name, last_name, manager_id FROM employee_trackerDB.employee
+      ORDER BY manager_id;`, (err, res) => {
+          if (err) throw err; 
+          console.table(`
+          
+          Manager's Department View`, res); 
+      }); 
+      startEmployeeTracker(); 
+  //  })
+}
