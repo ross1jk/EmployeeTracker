@@ -18,6 +18,19 @@ const connection = mysql.createConnection({
 connection.connect((err) => {
     if (err) throw err;
     console.log("You Connected!"); // turn into welcome message 
+
+    connection.query("SELECT * FROM role", function (err, res) {
+        showroles = res.map(role => ({ name: role.title, value: role.id }))
+    })
+
+    connection.query("SELECT * FROM department", function (err, res) {
+        showdepartments = res.map(department => ({ name: department.name, value: department.id }))
+    })
+
+    connection.query("SELECT * FROM employee", function (err, res) {
+        showemployees = res.map(employee => ({ name: `${employee.first_name} ${employee.last_name}`, value: employee.id }))
+    })
+
     startEmployeeTracker();
 });
 
@@ -114,7 +127,7 @@ const add = () => {
                 startEmployeeTracker();
             });
         }
-        if (answer.add == 'Employee') {
+        if (answer.add === 'Employee') {
             inquirer.prompt([
                 {
                     name: 'first',
@@ -210,59 +223,35 @@ const viewComplete = () => {
 
 };
 
-
 const update = () => {
-    connection.query('SELECT * FROM employee', (err, res) => {
-        inquirer.prompt([
-            {
-                name: 'employee',
-                type: 'list',
-                choices() {
-                    const employeeArray = [];
-                    res.map(({ id, first_name, last_name }) => {
-                        let employeeSelect = {
-                            name: first_name + " " + last_name,
-                            value: id
-                        }
-                        employeeArray.push(employeeSelect);
-                    });
-                    return employeeArray;
+
+    inquirer.prompt([
+        {
+            name: 'employee',
+            type: 'list',
+            choices: showemployees,
+            message: 'Which Employee would you like to update?',
+        },
+        {
+            name: 'role',
+            type: 'list',
+            choices: showroles,
+            message: 'What is their updated role?',
+        }
+    ]).then((answer) => {
+        connection.query('UPDATE employee SET ? WHERE ?',
+            [
+                {
+                    role_id: answer.role
                 },
-                message: 'Which Employee would you like to update?',
-            },
-            {
-                name: 'role',
-                type: 'list',
-                choices() {
-                    const roleArray = []; 
-                    connection.query('SELECT * FROM role', (err, res) => {
-                        res.map(({ id, title }) => {
-                            let roleSelect = {
-                                name: title,
-                                value: id
-                            }
-                            roleArray.push(roleSelect); 
-                        });
-                    });
-                    return roleArray; 
-                }, 
-                message: 'What is their updated role?',
-            }
-        ]).then((answer) => {
-            connection.query('UPDATE employee SET ? WHERE ?',
-                [
-                    {
-                        role_id: answer.role
-                    },
-                    {
-                        id: answer.employee.value
-                    }
-                ]);
-            startEmployeeTracker();
-        });
+                {
+                    id: answer.employee.value
+                }
+            ]);
+        startEmployeeTracker();
     });
-}
-// UPDATE employee_trackerDB.employee SET role_id = 5 WHERE id = 4;
+};
+
 // bonus come back 
     // Update employee managers
 
