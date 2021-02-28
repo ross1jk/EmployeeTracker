@@ -17,19 +17,28 @@ const connection = mysql.createConnection({
 
 connection.connect((err) => {
     if (err) throw err;
-    console.log("You Connected!"); // turn into welcome message 
+    console.log(`
+     __________________________________
+    |                                  |
+    |                                  |
+    | Welcome to the Employee Tracker! |
+    |                                  |
+    |__________________________________|
+    
+    `); 
+
+    // These functions are retuurning a list of the current names with their values to be used throughout the applicaiton
+    connection.query("SELECT * FROM department", function (err, res) {
+        displayCurrentDepartments = res.map(department => ({ name: department.name, value: department.id }))
+    });
 
     connection.query("SELECT * FROM role", function (err, res) {
-        showroles = res.map(role => ({ name: role.title, value: role.id }))
-    })
-
-    connection.query("SELECT * FROM department", function (err, res) {
-        showdepartments = res.map(department => ({ name: department.name, value: department.id }))
-    })
+        displayCurrentRoles = res.map(role => ({ name: role.title, value: role.id }))
+    });
 
     connection.query("SELECT * FROM employee", function (err, res) {
-        showemployees = res.map(employee => ({ name: `${employee.first_name} ${employee.last_name}`, value: employee.id }))
-    })
+        displayCurrentEmployees = res.map(employee => ({ name: `${employee.first_name} ${employee.last_name}`, value: employee.id }))
+    });
 
     startEmployeeTracker();
 });
@@ -65,7 +74,6 @@ const startEmployeeTracker = () => {
     });
 };
 
-//working >> need to add the options to make more legit 
 const add = () => {
     inquirer.prompt({
         name: 'add',
@@ -110,7 +118,7 @@ const add = () => {
                 {
                     name: 'department',
                     type: 'list',
-                    choices: showdepartments,
+                    choices: displayCurrentDepartments,
                     message: 'What is the department ID for this role?'
                 }
             ]).then((answer) => {
@@ -133,22 +141,24 @@ const add = () => {
                 {
                     name: 'first',
                     type: 'input',
-                    message: 'What is the employees frist name?'
+                    message: `What is the employee's frist name?`
                 },
                 {
                     name: 'last',
                     type: 'input',
-                    message: 'What is the employees last name?'
+                    message: `What is the employee's last name?`
                 },
                 {
                     name: 'role',
-                    type: 'input',
-                    message: 'What is the employees role id'
+                    type: 'list',
+                    choices: displayCurrentRoles,
+                    message: `What is the employee's role?`
                 },
                 {
                     name: 'manager',
-                    type: 'input',
-                    message: 'What is the employees Managers ID?'
+                    type: 'list',
+                    choices: displayCurrentEmployees,
+                    message: `What is the employee's Manager's ID?`
                 }
             ]).then((answer) => {
                 connection.query('INSERT INTO employee SET ?',
@@ -169,7 +179,6 @@ const add = () => {
     });
 };
 
-// working >> need to add the options to make more legit 
 const viewComplete = () => {
     inquirer.prompt({
         name: 'view',
@@ -224,20 +233,19 @@ const viewComplete = () => {
 
 };
 
-// working 
 const update = () => {
 
     inquirer.prompt([
         {
             name: 'employee',
             type: 'list',
-            choices: showemployees,
+            choices: displayCurrentEmployees,
             message: 'Which Employee would you like to update?',
         },
         {
             name: 'role',
             type: 'list',
-            choices: showroles,
+            choices: displayCurrentRoles,
             message: 'What is their updated role?',
         }
     ]).then((answer) => {
