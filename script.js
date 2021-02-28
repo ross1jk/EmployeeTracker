@@ -4,7 +4,6 @@ const cTable = require('console.table');
 const { start } = require('repl');
 const { resourceLimits } = require('worker_threads');
 const { listenerCount } = require('events');
-// https://www.npmjs.com/package/console.table 
 
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -54,6 +53,7 @@ const startEmployeeTracker = () => {
             `Update a Current Employee's Role`,
             `Update an Employee's Manager`,
             'Delete a department, role, or an employee',
+            `View each department's total utilized budget`,
             'Quit Employee Tracker Application'
         ]
     }).then((answer) => {
@@ -72,6 +72,9 @@ const startEmployeeTracker = () => {
                 break;
             case `Delete a department, role, or an employee`:
                 deleteEntry();
+                break;
+            case `View each department's total utilized budget`:
+                utilizedBudget();
                 break;
             case 'Quit Employee Tracker Application':
                 console.log(`
@@ -378,8 +381,20 @@ const deleteEntry = () => {
         });
         
     };
+
+const utilizedBudget = () => {
+    connection.query(`SELECT name, SUM(salary)
+    FROM employee_trackerDB.employee
+    INNER JOIN employee_trackerDB.role ON employee.role_id = role.id
+    INNER JOIN employee_trackerDB.department ON role.department_id = department.id
+    GROUP BY department.id;`, (err, res) => {
+        if (err) throw err;
+        console.table(`
+        
+        Utilized Budget per Department`, res); 
+    }); 
+    startEmployeeTracker(); 
+}
 // bonus come back 
 
     // View employees by manager
-
-    // View the total utilized budget of a department -- combined salaries of all employees in that department
