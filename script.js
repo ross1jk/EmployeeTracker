@@ -144,7 +144,7 @@ const add = () => {
                     name: 'department',
                     type: 'list',
                     choices: displayCurrentDepartments,
-                    message: 'What is the department ID for this role?'
+                    message: 'What department is this role in?'
                 }
             ]).then((answer) => {
                 connection.query('INSERT INTO role SET ?',
@@ -220,7 +220,9 @@ const viewComplete = () => {
             connection.query(
                 'SELECT * FROM department', (err, res) => {
                     if (err) throw err;
-                    console.table(res);
+                    console.table(`
+
+                    Current Departments`, res);
                 }
             );
         }
@@ -228,7 +230,9 @@ const viewComplete = () => {
             connection.query(
                 'SELECT * FROM role', (err, res) => {
                     if (err) throw err;
-                    console.table(res);
+                    console.table(`
+                    
+                    Current Roles`, res);
                 }
             );
         }
@@ -236,7 +240,9 @@ const viewComplete = () => {
             connection.query(
                 'SELECT * FROM employee', (err, res) => {
                     if (err) throw err;
-                    console.table(res);
+                    console.table(`
+                    
+                    Current Employees`, res);
                 }
             );
         }
@@ -250,7 +256,9 @@ const viewComplete = () => {
                 ON role.department_id = department.id;
                 `, (err, res) => {
                 if (err) throw err;
-                console.table(res);
+                console.table(`
+                    
+                Complete Department Chart`, res);
             });
         }
         startEmployeeTracker();
