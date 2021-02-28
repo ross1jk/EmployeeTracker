@@ -25,7 +25,7 @@ connection.connect((err) => {
     |                                  |
     |__________________________________|
     
-    `); 
+    `);
 
     // These functions are retuurning a list of the current names with their values to be used throughout the applicaiton
     connection.query("SELECT * FROM department", function (err, res) {
@@ -53,10 +53,11 @@ const startEmployeeTracker = () => {
             'View complete lists of departments, roles, or employees',
             `Update a Current Employee's Role`,
             `Update an Employee's Manager`,
+            'Delete a department, role, or an employee',
             'Quit Employee Tracker Application'
         ]
     }).then((answer) => {
-        switch (answer.initChoice){
+        switch (answer.initChoice) {
             case `Add a new department, role, or an employee`:
                 add();
                 break;
@@ -69,6 +70,9 @@ const startEmployeeTracker = () => {
             case `Update an Employee's Manager`:
                 updateManger();
                 break;
+            case `Delete a department, role, or an employee`:
+                deleteEntry();
+                break;
             case 'Quit Employee Tracker Application':
                 console.log(`
                  _________________________________
@@ -80,22 +84,6 @@ const startEmployeeTracker = () => {
                 `)
                 connection.end();
         }
-        // if (answer.initChoice === 'Add a department, role, or an employee') {
-        //     console.log('Add a department, role, or an employee');
-        //     add();
-        // }
-        // if (answer.initChoice === 'View complete lists of departments, roles, or employees') {
-        //     console.log('View departments, roles, or employees');
-        //     viewComplete();
-        // }
-        // if (answer.initChoice === 'Update a current employee roles') {
-        //     console.log('Update a current employee roles');
-        //     update()
-        // }
-        // if (answer.initChoice === 'Quit Employee Tracker Application') {
-        //     console.log('Thank you for using Employee Tracker');
-        //     connection.end();
-        // }
     });
 };
 
@@ -299,34 +287,99 @@ const updateManger = () => {
         {
             name: 'employee',
             type: 'list',
-            choices: displayCurrentEmployees, 
+            choices: displayCurrentEmployees,
             message: `Which employee's manager needs to be updated?`
 
         },
         {
-            name: 'manager', 
+            name: 'manager',
             type: 'list',
             choices: displayCurrentEmployees,
             message: `Who is their new manager?`
         }
     ]).then((answer) => {
-        connection.query('UPDATE employee SET ? WHERE ?', 
-        [
-            {
-                manager_id: answer.manager
-            },
-            {
-                id: answer.employee
-            }
-        ]);
-        startEmployeeTracker(); 
+        connection.query('UPDATE employee SET ? WHERE ?',
+            [
+                {
+                    manager_id: answer.manager
+                },
+                {
+                    id: answer.employee
+                }
+            ]);
+        startEmployeeTracker();
     })
 }
+
+const deleteEntry = () => {
+    inquirer.prompt([
+        {
+            name: 'deleteChoice',
+            type: 'list',
+            message: 'What would you like to delete?',
+            choices: [
+                "Department",
+                "Role",
+                "Employee"
+            ]
+        }
+    ]).then((answer) => {
+        if (answer.deleteChoice === "Department") {
+            inquirer.prompt([
+                {
+                    name: 'deleteDepart',
+                    type: 'list',
+                    message: 'Which Department would you like to delete?',
+                    choices: displayCurrentDepartments
+                }
+            ]).then((answer) => {
+                connection.query('DELETE FROM department WHERE ?',
+                    {
+                        id: answer.deleteDepart
+                    },
+                );
+                startEmployeeTracker();
+            });
+        }
+        if (answer.deleteChoice === "Role") {
+            inquirer.prompt([
+                {
+                    name: 'deleteRole',
+                    type: 'list',
+                    message: 'Which role would you like to delete?',
+                    choices: displayCurrentRoles
+                }
+            ]).then((answer) => {
+                connection.query('DELETE FROM role WHERE ?',
+                    {
+                        id: answer.deleteRole
+                    },
+                );
+                startEmployeeTracker();
+            });
+        }
+        if (answer.deleteChoice === "Employee") {
+            inquirer.prompt ([
+                {
+                    name: 'deleteEmployee',
+                    type: 'list', 
+                    message: 'Which Employee would you like to delete?',
+                    choices: displayCurrentEmployees
+                }
+            ]).then((answer) => {
+                connection.query('DELETE FROM employee WHERE ?', 
+                {
+                    id: answer.deleteEmployee
+                },
+                ); 
+                startEmployeeTracker();
+            });
+        }
+        });
+        
+    };
 // bonus come back 
-    // Update employee managers
 
     // View employees by manager
-
-    // Delete departments, roles, and employees
 
     // View the total utilized budget of a department -- combined salaries of all employees in that department
