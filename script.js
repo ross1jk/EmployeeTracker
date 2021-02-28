@@ -65,7 +65,7 @@ const startEmployeeTracker = () => {
     });
 };
 
-//working
+//working >> need to add the options to make more legit 
 const add = () => {
     inquirer.prompt({
         name: 'add',
@@ -109,7 +109,8 @@ const add = () => {
                 },
                 {
                     name: 'department',
-                    type: 'input',
+                    type: 'list',
+                    choices: showdepartments,
                     message: 'What is the department ID for this role?'
                 }
             ]).then((answer) => {
@@ -168,7 +169,7 @@ const add = () => {
     });
 };
 
-// working
+// working >> need to add the options to make more legit 
 const viewComplete = () => {
     inquirer.prompt({
         name: 'view',
@@ -223,6 +224,7 @@ const viewComplete = () => {
 
 };
 
+// working 
 const update = () => {
 
     inquirer.prompt([
@@ -245,7 +247,7 @@ const update = () => {
                     role_id: answer.role
                 },
                 {
-                    id: answer.employee.value
+                    id: answer.employee
                 }
             ]);
         startEmployeeTracker();
