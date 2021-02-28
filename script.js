@@ -49,28 +49,53 @@ const startEmployeeTracker = () => {
         type: 'list',
         message: 'What would you like to do?',
         choices: [
-            'Add a department, role, or an employee',
+            `Add a new department, role, or an employee`,
             'View complete lists of departments, roles, or employees',
-            'Update a current employee roles',
+            `Update a Current Employee's Role`,
+            `Update an Employee's Manager`,
             'Quit Employee Tracker Application'
         ]
     }).then((answer) => {
-        if (answer.initChoice === 'Add a department, role, or an employee') {
-            console.log('Add a department, role, or an employee');
-            add();
+        switch (answer.initChoice){
+            case `Add a new department, role, or an employee`:
+                add();
+                break;
+            case 'View complete lists of departments, roles, or employees':
+                viewComplete();
+                break;
+            case `Update a Current Employee's Role`:
+                updateRole();
+                break;
+            case `Update an Employee's Manager`:
+                updateManger();
+                break;
+            case 'Quit Employee Tracker Application':
+                console.log(`
+                 _________________________________
+                |                                 |
+                |       Thank you for using       |
+                |        Employee Tracker!        |
+                |_________________________________| 
+
+                `)
+                connection.end();
         }
-        if (answer.initChoice === 'View complete lists of departments, roles, or employees') {
-            console.log('View departments, roles, or employees');
-            viewComplete();
-        }
-        if (answer.initChoice === 'Update a current employee roles') {
-            console.log('Update a current employee roles');
-            update()
-        }
-        if (answer.initChoice === 'Quit Employee Tracker Application') {
-            console.log('Thank you for using Employee Tracker');
-            connection.end();
-        }
+        // if (answer.initChoice === 'Add a department, role, or an employee') {
+        //     console.log('Add a department, role, or an employee');
+        //     add();
+        // }
+        // if (answer.initChoice === 'View complete lists of departments, roles, or employees') {
+        //     console.log('View departments, roles, or employees');
+        //     viewComplete();
+        // }
+        // if (answer.initChoice === 'Update a current employee roles') {
+        //     console.log('Update a current employee roles');
+        //     update()
+        // }
+        // if (answer.initChoice === 'Quit Employee Tracker Application') {
+        //     console.log('Thank you for using Employee Tracker');
+        //     connection.end();
+        // }
     });
 };
 
@@ -233,8 +258,7 @@ const viewComplete = () => {
 
 };
 
-const update = () => {
-
+const updateRole = () => {
     inquirer.prompt([
         {
             name: 'employee',
@@ -262,6 +286,34 @@ const update = () => {
     });
 };
 
+const updateManger = () => {
+    inquirer.prompt([
+        {
+            name: 'employee',
+            type: 'list',
+            choices: displayCurrentEmployees, 
+            message: `Which employee's manager needs to be updated?`
+
+        },
+        {
+            name: 'manager', 
+            type: 'list',
+            choices: displayCurrentEmployees,
+            message: `Who is their new manager?`
+        }
+    ]).then((answer) => {
+        connection.query('UPDATE employee SET ? WHERE ?', 
+        [
+            {
+                manager_id: answer.manager
+            },
+            {
+                id: answer.employee
+            }
+        ]);
+        startEmployeeTracker(); 
+    })
+}
 // bonus come back 
     // Update employee managers
 
@@ -270,11 +322,3 @@ const update = () => {
     // Delete departments, roles, and employees
 
     // View the total utilized budget of a department -- combined salaries of all employees in that department
-
-    // choices() {
-    //     const employeeArray = [];
-    //     res.forEach(({ first_name }) => {
-    //         employeeArray.push(first_name);
-    //     });
-    //     return employeeArray;
-    // },
