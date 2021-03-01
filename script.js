@@ -39,6 +39,10 @@ connection.connect((err) => {
         displayCurrentEmployees = res.map(employee => ({ name: `${employee.first_name} ${employee.last_name}`, value: employee.id }))
     });
 
+    // connection.query("SELECT * FROM employee", function (err, res){
+    //     displayManagers = res.map(employee => ({ name: `${employee.first_name} ${employee.last_name}`, value: employee.manager_id }))
+    // }); 
+
     startEmployeeTracker();
 });
 
@@ -77,8 +81,8 @@ const startEmployeeTracker = () => {
             case `View each department's total utilized budget`:
                 utilizedBudget();
                 break;
-            case `View departments by Manager`: 
-                managerView(); 
+            case `View departments by Manager`:
+                managerView();
                 break;
             case 'Quit Employee Tracker Application':
                 console.log(`
@@ -285,6 +289,8 @@ const updateRole = () => {
                     id: answer.employee
                 }
             ]);
+
+        console.log(`The employee's current role has been updated`);
         startEmployeeTracker();
     });
 };
@@ -314,6 +320,8 @@ const updateManger = () => {
                     id: answer.employee
                 }
             ]);
+
+        console.log(`Your Employee's manager has been updated`);
         startEmployeeTracker();
     })
 }
@@ -345,6 +353,7 @@ const deleteEntry = () => {
                         id: answer.deleteDepart
                     },
                 );
+                console.log(`Department has been deleted`);
                 startEmployeeTracker();
             });
         }
@@ -362,29 +371,31 @@ const deleteEntry = () => {
                         id: answer.deleteRole
                     },
                 );
+                console.log("Role has been deleted");
                 startEmployeeTracker();
             });
         }
         if (answer.deleteChoice === "Employee") {
-            inquirer.prompt ([
+            inquirer.prompt([
                 {
                     name: 'deleteEmployee',
-                    type: 'list', 
+                    type: 'list',
                     message: 'Which Employee would you like to delete?',
                     choices: displayCurrentEmployees
                 }
             ]).then((answer) => {
-                connection.query('DELETE FROM employee WHERE ?', 
-                {
-                    id: answer.deleteEmployee
-                },
-                ); 
+                connection.query('DELETE FROM employee WHERE ?',
+                    {
+                        id: answer.deleteEmployee
+                    },
+                );
+                console.log("Employee has been deleted");
                 startEmployeeTracker();
             });
         }
-        });
-        
-    };
+    });
+
+};
 
 const utilizedBudget = () => {
     connection.query(`SELECT name, SUM(salary)
@@ -395,9 +406,9 @@ const utilizedBudget = () => {
         if (err) throw err;
         console.table(`
         
-        Utilized Budget per Department`, res); 
-    }); 
-    startEmployeeTracker(); 
+        Utilized Budget per Department`, res);
+    });
+    startEmployeeTracker();
 }
 
 const managerView = () => {
@@ -409,13 +420,13 @@ const managerView = () => {
     //         choices: 
     //     }
     // ]).then((answer) => {
-      connection.query(`SELECT id, first_name, last_name, manager_id FROM employee_trackerDB.employee
+    connection.query(`SELECT id, first_name, last_name, manager_id FROM employee_trackerDB.employee
       ORDER BY manager_id;`, (err, res) => {
-          if (err) throw err; 
-          console.table(`
+        if (err) throw err;
+        console.table(`
           
-          Manager's Department View`, res); 
-      }); 
-      startEmployeeTracker(); 
-  //  })
+          Manager's Department View`, res);
+    });
+    startEmployeeTracker();
+    //  })
 }
