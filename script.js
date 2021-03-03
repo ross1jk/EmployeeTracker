@@ -259,16 +259,16 @@ const viewComplete = () => {
         if (answer.view === 'Complete Department') {
             connection.query(
                 `
-                 SELECT 
-                    CONCAT (first_name, ' ', last_name) AS 'Name', 
-                    salary As 'Salary', 
-                    title AS 'Role Title', 
-                    name AS 'Department', 
-                    manager_id AS 'Manager' 
-                 FROM employee
-                 JOIN role ON employee.role_id = role.id
-                 JOIN department ON role.department_id = department.id
-                 ;
+                SELECT 
+                    CONCAT (employee_trackerDB.employee.first_name, ' ', employee_trackerDB.employee.last_name) AS 'Name', 
+                    employee_trackerDB.role.salary As 'Salary', 
+                    employee_trackerDB.role.title AS 'Role Title', 
+                    employee_trackerDB.department.name AS 'Department',
+                    CONCAT(employee_trackerDB.manager.first_name, ' ', employee_trackerDB.manager.last_name) AS 'Manager' 
+                FROM employee_trackerDB.employee
+                JOIN role ON employee_trackerDB.employee.role_id = employee_trackerDB.role.id
+                JOIN employee_trackerDB.department ON employee_trackerDB.role.department_id = employee_trackerDB.department.id
+                LEFT JOIN employee AS manager ON employee.manager_id = manager.id;
                 `, (err, res) => {
                 if (err) throw err;
                 console.table(`
