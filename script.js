@@ -44,6 +44,20 @@ const startEmployeeTracker = () => {
         displayCurrentEmployees = res.map(employee => ({ name: `${employee.first_name} ${employee.last_name}`, value: employee.id }))
     });
 
+    // const manager = () => {
+    //     const managerArray = [];
+    //     connection.query('SELECT * FROM employee', (err, res) => {
+    //         res.map(({ first_name, last_name, manager_id }) => {
+    //             let manager = {
+    //                 name: `${first_name} ${last_name}`,
+    //                 value: manager_id
+    //             }
+    //             managerArray.push(manager);
+    //         });
+    //     });
+    //     return managerArray;
+    // }
+
     inquirer.prompt({
         name: 'initChoice',
         type: 'list',
@@ -246,15 +260,14 @@ const viewComplete = () => {
             connection.query(
                 `
                  SELECT 
-                    first_name AS 'First Name', 
-                    last_name AS 'Last Name', 
+                    CONCAT (first_name, ' ', last_name) AS 'Name', 
                     salary As 'Salary', 
                     title AS 'Role Title', 
                     name AS 'Department', 
                     manager_id AS 'Manager' 
                  FROM employee
-                 INNER JOIN role ON employee.role_id = role.id
-                 INNER JOIN department ON role.department_id = department.id
+                 JOIN role ON employee.role_id = role.id
+                 JOIN department ON role.department_id = department.id
                  ;
                 `, (err, res) => {
                 if (err) throw err;
@@ -402,11 +415,16 @@ const deleteEntry = () => {
 
 // Total utlized budget by department > sum of salaries per department 
 const utilizedBudget = () => {
-    connection.query(`SELECT name AS 'Department', SUM(salary) AS 'Utilized Budget'
+    connection.query(`
+    SELECT 
+        name AS 'Department', 
+        SUM(salary) AS 'Utilized Budget'
     FROM employee_trackerDB.employee
     INNER JOIN employee_trackerDB.role ON employee.role_id = role.id
     INNER JOIN employee_trackerDB.department ON role.department_id = department.id
-    GROUP BY department.id;`, (err, res) => {
+    GROUP BY department.id;`, 
+    
+    (err, res) => {
         if (err) throw err;
         console.table(`
         
@@ -416,34 +434,64 @@ const utilizedBudget = () => {
 }
 
 // half working > groups by manager, does not view indvidually 
-const managerView = () => {
+// const managerView = () => {
+//     inquirer.prompt([
+//         {
+//             name: 'managerview',
+//             type: 'list',
+//             message: `Which manager's department would you like to view?`,
+//             choices: displayCurrentEmployees
+//         }
+//     ])
+//         // inquirer.prompt([
+//         //     {
+//         //         name: 'managerview',
+//         //         type: 'list',
+//         //         message: `Which manager's department would you like to view?`,
+//         //         choices() {
+//         //             const managerArray = [];
+//         //             connection.query('SELECT * FROM employee', (err, res) => {
+//         //                 res.map(({ first_name, last_name, manager_id }) => {
+//         //                     let manager = {
+//         //                         name: `${first_name} ${last_name}`,
+//         //                         value: manager_id
+//         //                     }
+//         //                     managerArray.push(manager);
+//         //                 });
+//         //             });
+//         //             return managerArray;
+//         //         }
+//         // }])
+//         .then((answer) => {
+//             connection.query(`SELECT id, first_name, last_name, manager_id FROM employee_trackerDB.employee
+//       WHERE employee.manager_id= ?`,
+//                 [answer.managerview],
+//             ), (err, res) => {
+//                 if (err) throw err;
+//                 console.table(`
 
-    // inquirer.prompt([
-    //     {
-    //         name: 'managerview',
-    //         type: 'list',
-    //         message: `Which manager's department would you like to view?`,
-    //         choices() {
-    //             const managerArray = [];
-    //             connection.query('SELECT * FROM employee', (err, res) => {
-    //                 res.map(({ first_name, last_name, manager_id }) => {
-    //                     let manager = {
-    //                         name: `${first_name} ${last_name}`,
-    //                         value: manager_id
-    //                     }
-    //                     managerArray.push(manager);
-    //                 });
-    //             });
-    //             return managerArray;
-    //         }
-    //     }]).then((answer) => {
-            connection.query(`SELECT id, first_name, last_name, manager_id FROM employee_trackerDB.employee
-      ORDER BY manager_id;`, (err, res) => {
-                if (err) throw err;
-                console.table(`
+//           Manager's Department View`, res)
+//             };
+//             startEmployeeTracker();
+//         });
+
+// };
+
+// half working > groups by manager, does not view indvidually 
+
+const managerView = () => {
+    connection.query(`
+            SELECT 
+                id AS 'Employee ID',
+                CONCAT (first_name, ' ', last_name) AS 'Name',
+                manager_id AS 'Manager'
+            FROM employee_trackerDB.employee
+            ORDER BY manager_id;`,
+        (err, res) => {
+            if (err) throw err;
+            console.table(`
           
           Manager's Department View`, res);
-            });
-            startEmployeeTracker();
-//         });
+        });
+    startEmployeeTracker();
 }
