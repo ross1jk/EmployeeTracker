@@ -414,14 +414,14 @@ const utilizedBudget = () => {
     FROM employee_trackerDB.employee
     INNER JOIN employee_trackerDB.role ON employee.role_id = role.id
     INNER JOIN employee_trackerDB.department ON role.department_id = department.id
-    GROUP BY department.id;`,
-
-        (err, res) => {
-            if (err) throw err;
-            console.table(`
+    GROUP BY department.id;`, 
+    
+    (err, res) => {
+        if (err) throw err;
+        console.table(`
         
         Utilized Budget per Department`, res);
-        });
+    });
     startEmployeeTracker();
 }
 
