@@ -30,6 +30,7 @@ connection.connect((err) => {
 
 });
 
+// Start of Application
 const startEmployeeTracker = () => {
     // These functions are retuurning a list of the current names with their values to be used throughout the applicaiton
     connection.query("SELECT * FROM department", function (err, res) {
@@ -43,20 +44,6 @@ const startEmployeeTracker = () => {
     connection.query("SELECT * FROM employee", function (err, res) {
         displayCurrentEmployees = res.map(employee => ({ name: `${employee.first_name} ${employee.last_name}`, value: employee.id }))
     });
-
-    // const manager = () => {
-    //     const managerArray = [];
-    //     connection.query('SELECT * FROM employee', (err, res) => {
-    //         res.map(({ first_name, last_name, manager_id }) => {
-    //             let manager = {
-    //                 name: `${first_name} ${last_name}`,
-    //                 value: manager_id
-    //             }
-    //             managerArray.push(manager);
-    //         });
-    //     });
-    //     return managerArray;
-    // }
 
     inquirer.prompt({
         name: 'initChoice',
@@ -109,6 +96,7 @@ const startEmployeeTracker = () => {
     });
 };
 
+// add Department Role or Employee
 const add = () => {
     inquirer.prompt({
         name: 'add',
@@ -214,6 +202,7 @@ const add = () => {
     });
 };
 
+// View complete department, departments only, roles only employees only 
 const viewComplete = () => {
     inquirer.prompt({
         name: 'view',
@@ -281,6 +270,7 @@ const viewComplete = () => {
 
 };
 
+// Update an Employee's Role
 const updateRole = () => {
     inquirer.prompt([
         {
@@ -311,6 +301,7 @@ const updateRole = () => {
     });
 };
 
+// Update an Employee's Manager 
 const updateManger = () => {
     inquirer.prompt([
         {
@@ -342,6 +333,7 @@ const updateManger = () => {
     })
 }
 
+// Delete an Existing Entry
 const deleteEntry = () => {
     inquirer.prompt([
         {
@@ -413,7 +405,7 @@ const deleteEntry = () => {
 
 };
 
-// Total utlized budget by department > sum of salaries per department 
+// Calculates each budget for every department utilized 
 const utilizedBudget = () => {
     connection.query(`
     SELECT 
@@ -422,63 +414,18 @@ const utilizedBudget = () => {
     FROM employee_trackerDB.employee
     INNER JOIN employee_trackerDB.role ON employee.role_id = role.id
     INNER JOIN employee_trackerDB.department ON role.department_id = department.id
-    GROUP BY department.id;`, 
-    
-    (err, res) => {
-        if (err) throw err;
-        console.table(`
+    GROUP BY department.id;`,
+
+        (err, res) => {
+            if (err) throw err;
+            console.table(`
         
         Utilized Budget per Department`, res);
-    });
+        });
     startEmployeeTracker();
 }
 
-// half working > groups by manager, does not view indvidually 
-// const managerView = () => {
-//     inquirer.prompt([
-//         {
-//             name: 'managerview',
-//             type: 'list',
-//             message: `Which manager's department would you like to view?`,
-//             choices: displayCurrentEmployees
-//         }
-//     ])
-//         // inquirer.prompt([
-//         //     {
-//         //         name: 'managerview',
-//         //         type: 'list',
-//         //         message: `Which manager's department would you like to view?`,
-//         //         choices() {
-//         //             const managerArray = [];
-//         //             connection.query('SELECT * FROM employee', (err, res) => {
-//         //                 res.map(({ first_name, last_name, manager_id }) => {
-//         //                     let manager = {
-//         //                         name: `${first_name} ${last_name}`,
-//         //                         value: manager_id
-//         //                     }
-//         //                     managerArray.push(manager);
-//         //                 });
-//         //             });
-//         //             return managerArray;
-//         //         }
-//         // }])
-//         .then((answer) => {
-//             connection.query(`SELECT id, first_name, last_name, manager_id FROM employee_trackerDB.employee
-//       WHERE employee.manager_id= ?`,
-//                 [answer.managerview],
-//             ), (err, res) => {
-//                 if (err) throw err;
-//                 console.table(`
-
-//           Manager's Department View`, res)
-//             };
-//             startEmployeeTracker();
-//         });
-
-// };
-
-// half working > groups by manager, does not view indvidually 
-
+// View all employees sorted by managers 
 const managerView = () => {
     connection.query(`
      SELECT 
