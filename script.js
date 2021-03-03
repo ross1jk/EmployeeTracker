@@ -481,12 +481,13 @@ const utilizedBudget = () => {
 
 const managerView = () => {
     connection.query(`
-            SELECT 
-                id AS 'Employee ID',
-                CONCAT (first_name, ' ', last_name) AS 'Name',
-                manager_id AS 'Manager'
-            FROM employee_trackerDB.employee
-            ORDER BY manager_id;`,
+     SELECT 
+        employee_trackerDB.employee.id AS 'Employee ID',
+        CONCAT (employee_trackerDB.employee.first_name, ' ', employee_trackerDB.employee.last_name) AS 'Name',
+        CONCAT(employee_trackerDB.manager.first_name, ' ', employee_trackerDB.manager.last_name) AS 'Manager' 
+     FROM employee_trackerDB.employee
+     LEFT JOIN employee AS manager ON employee.manager_id = manager.id
+     ORDER BY Manager;`,
         (err, res) => {
             if (err) throw err;
             console.table(`
