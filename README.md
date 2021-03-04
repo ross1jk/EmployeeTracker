@@ -35,9 +35,13 @@ To run this application on your own device locally you will need to download thi
 
 **node script.js**
 
-Then answer the questions that appear accordingly. 
+Then answer the questions that appear accordingly.
 
-Please view the following tutorial to see the full functionality of the Employee Application: 
+Please view the following tutorial to see the full functionality of the Employee Application:
+
+[Application Tutorial](https://drive.google.com/file/d/1jmObDP7NoCBfWrvpvdc9kLSZKozkqxc1/view)
+
+[MySQL Workbench and Application Link](https://drive.google.com/file/d/1vlTOmWNkxQvWlCItFKA0-V6iLT1nqz5T/view)
 
 ## Employee Database Schema
 
